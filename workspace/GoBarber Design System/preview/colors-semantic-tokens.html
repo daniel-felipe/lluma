@@ -1,0 +1,33 @@
+<!doctype html>
+<!-- @dsCard group="Colors" name="Semantic tokens" subtitle="bg/fg/accent on light vs dark surface" viewport="700x260" --><html><head><meta charset="utf-8"><link rel="stylesheet" href="_base.css">
+<style>
+  body { padding: 0; }
+  .card { padding: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 0; }
+  .panel { padding: 28px 24px; }
+  .light { background: var(--bone-50); color: var(--ink-900); }
+  .dark  { background: var(--ink-900); color: var(--bone-50); }
+  .row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; font: 14px var(--font-body); }
+  .row b { font-family: var(--font-display); font-weight: 600; }
+  .sw { width: 18px; height: 18px; border-radius: 4px; }
+  .label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; opacity: 0.6; font-weight: 600; margin-bottom: 14px; }
+</style></head>
+<body>
+<div class="card">
+  <div class="panel light">
+    <div class="label">Light surface</div>
+    <div class="row"><div class="sw" style="background:#FAF7F2;border:1px solid #E9E2D4"></div>bg-page</div>
+    <div class="row"><div class="sw" style="background:#FFFFFF;border:1px solid #E9E2D4"></div>bg-surface</div>
+    <div class="row"><div class="sw" style="background:#15130F"></div>fg-1</div>
+    <div class="row"><div class="sw" style="background:#45403A"></div>fg-2</div>
+    <div class="row"><div class="sw" style="background:#B86F1F"></div>accent</div>
+  </div>
+  <div class="panel dark">
+    <div class="label">Dark surface</div>
+    <div class="row"><div class="sw" style="background:#15130F;border:1px solid #2A2620"></div>bg-page</div>
+    <div class="row"><div class="sw" style="background:#1F1C18;border:1px solid #2A2620"></div>bg-surface</div>
+    <div class="row"><div class="sw" style="background:#FAF7F2"></div>fg-1</div>
+    <div class="row"><div class="sw" style="background:#E9E2D4"></div>fg-2</div>
+    <div class="row"><div class="sw" style="background:#D98B2F"></div>accent</div>
+  </div>
+</div>
+</body></html>

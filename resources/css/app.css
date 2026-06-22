@@ -1,0 +1,235 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter+Tight:ital,wght@0,400;0,500;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+@import 'tailwindcss';
+
+@import 'tw-animate-css';
+
+@source '../views';
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+
+@custom-variant dark (&:is(.dark *));
+
+@theme {
+    --font-sans:
+        'Inter Tight', system-ui, -apple-system, sans-serif,
+        'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol',
+        'Noto Color Emoji';
+    --font-display:
+        'Space Grotesk', 'Cabinet Grotesk', system-ui, sans-serif;
+    --font-mono:
+        'JetBrains Mono', ui-monospace, monospace;
+
+    --radius-lg: var(--radius);
+    --radius-md: calc(var(--radius) - 2px);
+    --radius-sm: calc(var(--radius) - 4px);
+
+    --color-background: var(--background);
+    --color-foreground: var(--foreground);
+
+    --color-card: var(--card);
+    --color-card-foreground: var(--card-foreground);
+
+    --color-popover: var(--popover);
+    --color-popover-foreground: var(--popover-foreground);
+
+    --color-primary: var(--primary);
+    --color-primary-foreground: var(--primary-foreground);
+
+    --color-secondary: var(--secondary);
+    --color-secondary-foreground: var(--secondary-foreground);
+
+    --color-muted: var(--muted);
+    --color-muted-foreground: var(--muted-foreground);
+
+    --color-accent: var(--accent);
+    --color-accent-foreground: var(--accent-foreground);
+
+    --color-destructive: var(--destructive);
+    --color-destructive-foreground: var(--destructive-foreground);
+
+    --color-border: var(--border);
+    --color-input: var(--input);
+    --color-ring: var(--ring);
+
+    --color-chart-1: var(--chart-1);
+    --color-chart-2: var(--chart-2);
+    --color-chart-3: var(--chart-3);
+    --color-chart-4: var(--chart-4);
+    --color-chart-5: var(--chart-5);
+
+    --color-sidebar: var(--sidebar);
+    --color-sidebar-foreground: var(--sidebar-foreground);
+    --color-sidebar-primary: var(--sidebar-primary);
+    --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+    --color-sidebar-accent: var(--sidebar-accent);
+    --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+    --color-sidebar-border: var(--sidebar-border);
+    --color-sidebar-ring: var(--sidebar-ring);
+}
+
+:root {
+    /* ── GoBarber Raw Palette ── */
+
+    /* Ink — off-black / shop interior */
+    --ink-950: #0E0D0B;
+    --ink-900: #15130F;
+    --ink-800: #1F1C18;
+    --ink-700: #2A2620;
+    --ink-600: #3A3530;
+
+    /* Bone — cream / paper / towel / marble */
+    --bone-50:  #FAF7F2;
+    --bone-100: #F4EFE6;
+    --bone-200: #E9E2D4;
+    --bone-300: #D6CDBC;
+    --bone-400: #A89E8A;
+    --bone-500: #6F6759;
+    --bone-600: #45403A;
+
+    /* Amber — signature warm accent */
+    --amber-50:  #FBF1E6;
+    --amber-100: #F5DFC1;
+    --amber-200: #EFC58E;
+    --amber-300: #E5A658;
+    --amber-400: #D98B2F;
+    --amber-500: #B86F1F;
+    --amber-600: #8F5316;
+    --amber-700: #6B3D10;
+
+    /* Semantics */
+    --green-500: #4F7A4A;
+    --green-100: #E0EBDA;
+    --red-500:   #B5462E;
+    --red-100:   #F4DDD5;
+    --blue-500:  #3D5A7A;
+    --blue-100:  #DCE4EE;
+
+    /* ── shadcn / Tailwind Semantic Tokens (light) ── */
+    --background: #FAF7F2;
+    --foreground: #15130F;
+    --card: #FFFFFF;
+    --card-foreground: #15130F;
+    --popover: #FFFFFF;
+    --popover-foreground: #15130F;
+    --primary: #B86F1F;
+    --primary-foreground: #FFFFFF;
+    --secondary: #F4EFE6;
+    --secondary-foreground: #15130F;
+    --muted: #F4EFE6;
+    --muted-foreground: #6F6759;
+    --accent: #FBF1E6;
+    --accent-foreground: #6B3D10;
+    --destructive: #B5462E;
+    --destructive-foreground: #FFFFFF;
+    --border: #E9E2D4;
+    --input: #E9E2D4;
+    --ring: #B86F1F;
+    --radius: 0.75rem;
+
+    /* Charts — reuse brand palette */
+    --chart-1: #B86F1F;
+    --chart-2: #4F7A4A;
+    --chart-3: #3D5A7A;
+    --chart-4: #D98B2F;
+    --chart-5: #B5462E;
+
+    /* Sidebar */
+    --sidebar: #FFFFFF;
+    --sidebar-foreground: #15130F;
+    --sidebar-primary: #B86F1F;
+    --sidebar-primary-foreground: #FFFFFF;
+    --sidebar-accent: #FBF1E6;
+    --sidebar-accent-foreground: #6B3D10;
+    --sidebar-border: #E9E2D4;
+    --sidebar-ring: #B86F1F;
+
+    /* ── Design System Motion ── */
+    --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+    --ease-in: cubic-bezier(0.55, 0, 1, 0.45);
+    --ease-std: cubic-bezier(0.4, 0, 0.2, 1);
+    --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+
+    --dur-1: 120ms;
+    --dur-2: 200ms;
+    --dur-3: 320ms;
+    --dur-4: 520ms;
+
+    /* ── Design System Shadows — warm, two-layer ── */
+    --shadow-1: 0 1px 0 rgba(21, 19, 15, 0.04), 0 1px 2px rgba(21, 19, 15, 0.06);
+    --shadow-2: 0 1px 0 rgba(21, 19, 15, 0.04), 0 4px 12px rgba(21, 19, 15, 0.08);
+    --shadow-3: 0 2px 0 rgba(21, 19, 15, 0.04), 0 12px 32px rgba(21, 19, 15, 0.14);
+    --shadow-4: 0 4px 0 rgba(21, 19, 15, 0.04), 0 24px 56px rgba(21, 19, 15, 0.20);
+    --shadow-inset-1: inset 0 1px 0 rgba(21, 19, 15, 0.06);
+    --shadow-inset-press: inset 0 2px 4px rgba(21, 19, 15, 0.18);
+}
+
+.dark {
+    --background: #15130F;
+    --foreground: #FAF7F2;
+    --card: #1F1C18;
+    --card-foreground: #FAF7F2;
+    --popover: #1F1C18;
+    --popover-foreground: #FAF7F2;
+    --primary: #D98B2F;
+    --primary-foreground: #FFFFFF;
+    --secondary: #2A2620;
+    --secondary-foreground: #FAF7F2;
+    --muted: #2A2620;
+    --muted-foreground: #D6CDBC;
+    --accent: rgba(217, 139, 47, 0.12);
+    --accent-foreground: #E5A658;
+    --destructive: #B5462E;
+    --destructive-foreground: #FFFFFF;
+    --border: #2A2620;
+    --input: #2A2620;
+    --ring: #D98B2F;
+
+    --chart-1: #D98B2F;
+    --chart-2: #4F7A4A;
+    --chart-3: #3D5A7A;
+    --chart-4: #E5A658;
+    --chart-5: #B5462E;
+
+    --sidebar: #1F1C18;
+    --sidebar-foreground: #FAF7F2;
+    --sidebar-primary: #D98B2F;
+    --sidebar-primary-foreground: #FFFFFF;
+    --sidebar-accent: rgba(217, 139, 47, 0.12);
+    --sidebar-accent-foreground: #E5A658;
+    --sidebar-border: #2A2620;
+    --sidebar-ring: #D98B2F;
+
+    /* Palette overrides — dark mode readability */
+    --amber-50: rgba(217, 139, 47, 0.14);
+    --amber-500: #E5A658;
+
+    /* Status badge colors */
+    --green-100: rgba(79, 122, 74, 0.18);
+    --green-500: #86C97F;
+    --red-100: rgba(181, 70, 46, 0.18);
+    --red-500: #E87A63;
+    --blue-100: rgba(61, 90, 122, 0.22);
+    --blue-500: #7AACC8;
+}
+
+@layer base {
+    * {
+        @apply border-border;
+    }
+
+    body {
+        @apply bg-background text-foreground;
+        -webkit-font-smoothing: antialiased;
+        text-rendering: optimizeLegibility;
+    }
+
+    h1, h2, h3 {
+        font-family: var(--font-display);
+        letter-spacing: -0.01em;
+    }
+
+    ::selection {
+        background: #EFC58E;
+        color: #15130F;
+    }
+}

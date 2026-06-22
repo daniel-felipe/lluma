@@ -1,0 +1,79 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>GoBarber — Barber Dashboard</title>
+<link rel="stylesheet" href="../../colors_and_type.css">
+<style>
+  body { margin: 0; background: var(--bone-200); display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 40px 20px; }
+  @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+  @keyframes fadeIn  { from { opacity: 0; } to { opacity: 1; } }
+</style>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+
+<template id="__bundler_thumbnail" data-bg-color="#15130F">
+  <svg viewBox="0 0 390 800" xmlns="http://www.w3.org/2000/svg">
+    <rect width="390" height="800" fill="#15130F"/>
+    <rect x="40" y="60" width="310" height="680" rx="28" fill="#1F1C18" stroke="#2A2620" stroke-width="1"/>
+    <rect x="40" y="60" width="310" height="180" rx="28" fill="#15130F"/>
+    <rect x="40" y="200" width="310" height="40" fill="#15130F"/>
+    <text x="60" y="110" font-family="sans-serif" font-weight="700" font-size="22" fill="#FAF7F2">Morning, Marcus.</text>
+    <rect x="60" y="130" width="130" height="60" rx="8" fill="#1F1C18" stroke="#2A2620" stroke-width="1"/>
+    <rect x="200" y="130" width="130" height="60" rx="8" fill="#1F1C18" stroke="#2A2620" stroke-width="1"/>
+    <text x="75" y="150" font-family="sans-serif" font-size="9" fill="#A89E8A">TODAY'S TAKE</text>
+    <text x="75" y="172" font-family="sans-serif" font-weight="700" font-size="20" fill="#FAF7F2">$285</text>
+    <text x="215" y="150" font-family="sans-serif" font-size="9" fill="#A89E8A">BOOKED</text>
+    <text x="215" y="172" font-family="sans-serif" font-weight="700" font-size="20" fill="#FAF7F2">5/8</text>
+    <rect x="56" y="250" width="278" height="52" rx="8" fill="#FFFFFF" stroke="#E9E2D4" stroke-width="1"/>
+    <rect x="56" y="314" width="278" height="52" rx="8" fill="#FFFFFF" stroke="#E9E2D4" stroke-width="1"/>
+    <rect x="56" y="378" width="278" height="52" rx="8" fill="#FBF1E6" stroke="#EFC58E" stroke-width="1"/>
+    <rect x="56" y="442" width="278" height="52" rx="8" fill="#FFFFFF" stroke="#E9E2D4" stroke-width="1"/>
+    <rect x="56" y="506" width="278" height="52" rx="8" fill="#FFFFFF" stroke="#E9E2D4" stroke-width="1"/>
+    <rect x="40" y="718" width="310" height="82" rx="0" fill="#FFFFFF" stroke="#E9E2D4" stroke-width="1"/>
+    <!-- scissors icon centered -->
+    <g transform="translate(171,370) scale(2.2)" stroke="#B86F1F" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="6" cy="6" r="3"/>
+      <circle cx="6" cy="18" r="3"/>
+      <line x1="20" y1="4" x2="8.12" y2="15.88"/>
+      <line x1="14.47" y1="14.48" x2="20" y2="20"/>
+      <line x1="8.12" y1="8.12" x2="12" y2="12"/>
+    </g>
+  </svg>
+</template>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel" src="../shared/Primitives.jsx"></script>
+<script type="text/babel" src="./BarberScreens.jsx"></script>
+<script type="text/babel">
+const BOOKINGS = [
+  { time: "10:00am", dur: 30, name: "Jamal Torres",   service: "Skin fade",       initials: "JT", tone: "amber", status: "ok",   statusLabel: "Done",      price: 40 },
+  { time: "11:30am", dur: 45, name: "Sam Kim",        service: "Cut + beard trim",initials: "SK", tone: "bone",  status: "ok",   statusLabel: "Done",      price: 55 },
+  { time: "2:30pm",  dur: 45, name: "Marcus Reyes",   service: "Cut + beard trim",initials: "MR", tone: "ink",   status: "pending", statusLabel: "Up next", price: 55, active: true },
+  { time: "3:30pm",  dur: 30, name: "Diego Alvarez",  service: "Cut",             initials: "DA", tone: "ink",   status: "neutral", statusLabel: "Booked",  price: 35 },
+  { time: "4:15pm",  dur: 30, name: "Theo Brennan",   service: "Lineup",          initials: "TB", tone: "amber", status: "neutral", statusLabel: "Booked",  price: 25 },
+  { time: "5:30pm",  dur: 60, name: "Walk-in slot",   service: "Open",            initials: "+",  tone: "bone",  status: null },
+];
+
+function App() {
+  const [tab, setTab] = React.useState("today");
+  const [sheet, setSheet] = React.useState(null);
+
+  return (
+    <PhoneFrame>
+      {tab === "today"    && <TodayScreen bookings={BOOKINGS} onPick={setSheet} />}
+      {tab === "clients"  && <ClientsScreen />}
+      {tab === "earnings" && <EarningsScreen />}
+      {tab === "settings" && <div style={{ flex: 1, background: "var(--bone-50)", padding: 16 }}><h1>Settings</h1><p style={{ marginTop: 12, color: "var(--fg-3)" }}>Account, hours, services, payments.</p></div>}
+      <TabBar tab={tab} setTab={setTab} />
+      {sheet && <BookingDetailSheet b={sheet} onClose={() => setSheet(null)} />}
+    </PhoneFrame>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+</script>
+</body>
+</html>

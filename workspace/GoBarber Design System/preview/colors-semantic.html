@@ -1,0 +1,43 @@
+<!doctype html>
+<!-- @dsCard group="Colors" name="Semantic colors" subtitle="Success, danger, info — all desaturated" viewport="700x160" --><html><head><meta charset="utf-8"><link rel="stylesheet" href="_base.css">
+<style>
+  body { padding: 0; }
+  .card { padding: 28px 24px; }
+  .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .pair { border: 1px solid var(--border-1); border-radius: 12px; padding: 14px; }
+  .dot { width: 14px; height: 14px; border-radius: 50%; display: inline-block; margin-right: 8px; vertical-align: middle; }
+  .name { font-weight: 600; font-size: 14px; }
+  .swatches { display: flex; gap: 6px; margin-top: 10px; }
+  .sw { width: 28px; height: 28px; border-radius: 6px; border: 1px solid rgba(0,0,0,0.06); }
+  .label { font-size: 11px; color: var(--fg-3); margin-top: 8px; font-family: var(--font-mono); }
+</style></head>
+<body>
+<div class="card">
+  <div class="grid">
+    <div class="pair">
+      <div class="name"><span class="dot" style="background:#4F7A4A"></span>Success</div>
+      <div class="swatches">
+        <div class="sw" style="background:#E0EBDA"></div>
+        <div class="sw" style="background:#4F7A4A"></div>
+      </div>
+      <div class="label">confirmed · available</div>
+    </div>
+    <div class="pair">
+      <div class="name"><span class="dot" style="background:#B5462E"></span>Danger</div>
+      <div class="swatches">
+        <div class="sw" style="background:#F4DDD5"></div>
+        <div class="sw" style="background:#B5462E"></div>
+      </div>
+      <div class="label">cancelled · error</div>
+    </div>
+    <div class="pair">
+      <div class="name"><span class="dot" style="background:#3D5A7A"></span>Info</div>
+      <div class="swatches">
+        <div class="sw" style="background:#DCE4EE"></div>
+        <div class="sw" style="background:#3D5A7A"></div>
+      </div>
+      <div class="label">used sparingly</div>
+    </div>
+  </div>
+</div>
+</body></html>
