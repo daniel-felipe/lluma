@@ -14,7 +14,7 @@ import type { BreadcrumbItem } from '@/types';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
-        title: 'Password settings',
+        title: 'Configurações de senha',
         href: edit().url,
     },
 ];
@@ -25,14 +25,14 @@ export default function Password() {
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Password settings" />
+            <Head title="Configurações de senha" />
 
             <SettingsLayout>
                 <div className="space-y-6">
                     <Heading
                         variant="small"
-                        title="Update password"
-                        description="Ensure your account is using a long, random password to stay secure"
+                        title="Atualizar senha"
+                        description="Garanta que sua conta use uma senha longa e aleatória para se manter segura"
                     />
 
                     <Form
@@ -61,7 +61,7 @@ export default function Password() {
                             <>
                                 <div className="grid gap-2">
                                     <Label htmlFor="current_password">
-                                        Current password
+                                        Senha atual
                                     </Label>
 
                                     <PasswordInput
@@ -70,7 +70,7 @@ export default function Password() {
                                         name="current_password"
                                         className="mt-1 block w-full"
                                         autoComplete="current-password"
-                                        placeholder="Current password"
+                                        placeholder="Senha atual"
                                     />
 
                                     <InputError
@@ -80,7 +80,7 @@ export default function Password() {
 
                                 <div className="grid gap-2">
                                     <Label htmlFor="password">
-                                        New password
+                                        Nova senha
                                     </Label>
 
                                     <PasswordInput
@@ -89,7 +89,7 @@ export default function Password() {
                                         name="password"
                                         className="mt-1 block w-full"
                                         autoComplete="new-password"
-                                        placeholder="New password"
+                                        placeholder="Nova senha"
                                     />
 
                                     <InputError message={errors.password} />
@@ -97,7 +97,7 @@ export default function Password() {
 
                                 <div className="grid gap-2">
                                     <Label htmlFor="password_confirmation">
-                                        Confirm password
+                                        Confirmar senha
                                     </Label>
 
                                     <PasswordInput
@@ -105,7 +105,7 @@ export default function Password() {
                                         name="password_confirmation"
                                         className="mt-1 block w-full"
                                         autoComplete="new-password"
-                                        placeholder="Confirm password"
+                                        placeholder="Confirmar senha"
                                     />
 
                                     <InputError
@@ -118,7 +118,7 @@ export default function Password() {
                                         disabled={processing}
                                         data-test="update-password-button"
                                     >
-                                        Save password
+                                        Salvar senha
                                     </Button>
 
                                     <Transition
@@ -129,7 +129,7 @@ export default function Password() {
                                         leaveTo="opacity-0"
                                     >
                                         <p className="text-sm text-neutral-600">
-                                            Saved
+                                            Salvo
                                         </p>
                                     </Transition>
                                 </div>

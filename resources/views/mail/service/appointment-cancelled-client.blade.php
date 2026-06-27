@@ -1,12 +1,10 @@
 <x-mail::message>
-# Introduction
+# Agendamento cancelado
 
-The body of your message.
+Olá! Seu agendamento de **{{ $serviceName }}** com **{{ $barberName }}** no dia **{{ $appointmentDate }}** foi cancelado.
 
-<x-mail::button :url="''">
-Button Text
-</x-mail::button>
+Se quiser, você pode escolher um novo horário a qualquer momento.
 
-Thanks,<br>
+Obrigado,<br>
 {{ config('app.name') }}
 </x-mail::message>
