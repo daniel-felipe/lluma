@@ -1,22 +1,22 @@
-import { Form, Head, useHttp } from '@inertiajs/react';
-import { useEffect, useState } from 'react';
-import InputError from '@/components/input-error';
-import PhoneInput from '@/components/phone-input';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Progress } from '@/components/ui/progress';
+import { Form, Head, useHttp } from "@inertiajs/react";
+import { useEffect, useState } from "react";
+import InputError from "@/components/input-error";
+import PhoneInput from "@/components/phone-input";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Progress } from "@/components/ui/progress";
 import {
     Select,
     SelectContent,
     SelectItem,
     SelectTrigger,
     SelectValue,
-} from '@/components/ui/select';
-import { Spinner } from '@/components/ui/spinner';
-import AuthLayout from '@/layouts/auth-layout';
-import { update } from '@/routes/onboarding/profile';
-import { available as slugAvailable } from '@/routes/slug';
+} from "@/components/ui/select";
+import { Spinner } from "@/components/ui/spinner";
+import AuthLayout from "@/layouts/auth-layout";
+import { update } from "@/routes/onboarding/profile";
+import { available as slugAvailable } from "@/routes/slug";
 
 type ProfileData = {
     business_name: string | null;
@@ -39,55 +39,139 @@ type Props = {
 };
 
 const BRAZIL_STATES = [
-    'AC',
-    'AL',
-    'AP',
-    'AM',
-    'BA',
-    'CE',
-    'DF',
-    'ES',
-    'GO',
-    'MA',
-    'MT',
-    'MS',
-    'MG',
-    'PA',
-    'PB',
-    'PR',
-    'PE',
-    'PI',
-    'RJ',
-    'RN',
-    'RS',
-    'RO',
-    'RR',
-    'SC',
-    'SP',
-    'SE',
-    'TO',
+    "AC",
+    "AL",
+    "AP",
+    "AM",
+    "BA",
+    "CE",
+    "DF",
+    "ES",
+    "GO",
+    "MA",
+    "MT",
+    "MS",
+    "MG",
+    "PA",
+    "PB",
+    "PR",
+    "PE",
+    "PI",
+    "RJ",
+    "RN",
+    "RS",
+    "RO",
+    "RR",
+    "SC",
+    "SP",
+    "SE",
+    "TO",
 ];
 
 function toSlug(name: string): string {
     return name
-        .normalize('NFD')
-        .replace(/\p{Diacritic}/gu, '')
+        .normalize("NFD")
+        .replace(/\p{Diacritic}/gu, "")
         .toLowerCase()
-        .replace(/[^a-z0-9\s-]/g, '')
+        .replace(/[^a-z0-9\s-]/g, "")
         .trim()
-        .replace(/\s+/g, '-')
-        .replace(/-+/g, '-')
+        .replace(/\s+/g, "-")
+        .replace(/-+/g, "-")
         .slice(0, 50);
 }
 
+function onlyDigits(value: string): string {
+    return value.replace(/\D/g, "");
+}
+
+function formatCep(value: string): string {
+    const digits = onlyDigits(value).slice(0, 8);
+
+    if (digits.length <= 5) {
+        return digits;
+    }
+
+    return `${digits.slice(0, 5)}-${digits.slice(5)}`;
+}
+
+type ViaCepResponse = {
+    logradouro?: string;
+    bairro?: string;
+    localidade?: string;
+    uf?: string;
+    erro?: boolean;
+};
+
 export default function Profile({ barber, profile, steps }: Props) {
-    const [slug, setSlug] = useState(profile?.slug ?? '');
+    const [slug, setSlug] = useState(profile?.slug ?? "");
     const [slugAvailability, setSlugAvailability] = useState<{
         available: boolean;
         suggestion: string;
     } | null>(null);
 
+    const [cep, setCep] = useState(profile?.address_cep ?? "");
+    const [street, setStreet] = useState(profile?.address_street ?? "");
+    const [neighborhood, setNeighborhood] = useState(
+        profile?.address_neighborhood ?? "",
+    );
+    const [city, setCity] = useState(profile?.address_city ?? "");
+    const [state, setState] = useState(profile?.address_state ?? "");
+    const [cepLoading, setCepLoading] = useState(false);
+    const [cepError, setCepError] = useState<string | null>(null);
+
     const { get: checkSlug } = useHttp();
+
+    useEffect(() => {
+        const digits = onlyDigits(cep);
+
+        if (digits.length !== 8) {
+            setCepError(null);
+            return;
+        }
+
+        const controller = new AbortController();
+
+        const timer = setTimeout(() => {
+            setCepLoading(true);
+            setCepError(null);
+
+            void fetch(`https://viacep.com.br/ws/${digits}/json/`, {
+                signal: controller.signal,
+            })
+                .then((response) => response.json() as Promise<ViaCepResponse>)
+                .then((data) => {
+                    if (data.erro) {
+                        setCepError("CEP não encontrado");
+                        return;
+                    }
+
+                    if (data.logradouro) {
+                        setStreet(data.logradouro);
+                    }
+                    if (data.bairro) {
+                        setNeighborhood(data.bairro);
+                    }
+                    if (data.localidade) {
+                        setCity(data.localidade);
+                    }
+                    if (data.uf) {
+                        setState(data.uf);
+                    }
+                })
+                .catch((error: unknown) => {
+                    if (error instanceof Error && error.name === "AbortError") {
+                        return;
+                    }
+                    setCepError("Não foi possível buscar o CEP");
+                })
+                .finally(() => setCepLoading(false));
+        }, 400);
+
+        return () => {
+            controller.abort();
+            clearTimeout(timer);
+        };
+    }, [cep]);
 
     useEffect(() => {
         if (!slug || slug.length < 3) {
@@ -108,7 +192,7 @@ export default function Profile({ barber, profile, steps }: Props) {
         return () => clearTimeout(timer);
     }, [slug, checkSlug]);
 
-    const progress = ((steps.indexOf('profile') + 1) / steps.length) * 100;
+    const progress = ((steps.indexOf("profile") + 1) / steps.length) * 100;
 
     return (
         <AuthLayout
@@ -137,7 +221,7 @@ export default function Profile({ barber, profile, steps }: Props) {
                                 <Input
                                     id="name"
                                     name="name"
-                                    defaultValue={barber.name ?? ''}
+                                    defaultValue={barber.name ?? ""}
                                     required
                                     autoFocus
                                 />
@@ -145,18 +229,23 @@ export default function Profile({ barber, profile, steps }: Props) {
                             </div>
 
                             <div className="grid gap-2">
-                                <Label htmlFor="phone">
-                                    Telefone
-                                </Label>
+                                <Label htmlFor="phone">Telefone</Label>
                                 <PhoneInput
                                     id="phone"
                                     name="phone"
                                     defaultCountry="BR"
-                                    value={barber.phone ?? ''}
-                                    aria-invalid={errors.phone ? 'true' : undefined}
-                                    aria-describedby={errors.phone ? 'phone-error' : undefined}
+                                    value={barber.phone ?? ""}
+                                    aria-invalid={
+                                        errors.phone ? "true" : undefined
+                                    }
+                                    aria-describedby={
+                                        errors.phone ? "phone-error" : undefined
+                                    }
                                 />
-                                <InputError id="phone-error" message={errors.phone} />
+                                <InputError
+                                    id="phone-error"
+                                    message={errors.phone}
+                                />
                             </div>
 
                             <div className="grid gap-2">
@@ -166,7 +255,7 @@ export default function Profile({ barber, profile, steps }: Props) {
                                 <Input
                                     id="business_name"
                                     name="business_name"
-                                    defaultValue={profile?.business_name ?? ''}
+                                    defaultValue={profile?.business_name ?? ""}
                                     required
                                     onChange={(e) =>
                                         setSlug(toSlug(e.target.value))
@@ -191,24 +280,49 @@ export default function Profile({ barber, profile, steps }: Props) {
                                         <span
                                             className={
                                                 slugAvailability.available
-                                                    ? 'text-sm text-green-600'
-                                                    : 'text-sm text-destructive'
+                                                    ? "text-sm text-green-600"
+                                                    : "text-sm text-destructive"
                                             }
                                         >
                                             {slugAvailability.available
-                                                ? '✓'
-                                                : '✗'}
+                                                ? "✓"
+                                                : "✗"}
                                         </span>
                                     )}
                                 </div>
                                 {slugAvailability &&
                                     !slugAvailability.available && (
                                         <p className="text-xs text-muted-foreground">
-                                            Sugestão:{' '}
+                                            Sugestão:{" "}
                                             {slugAvailability.suggestion}
                                         </p>
                                     )}
                                 <InputError message={errors.slug} />
+                            </div>
+
+                            <div className="grid gap-2">
+                                <Label htmlFor="address_cep">CEP</Label>
+                                <div className="relative">
+                                    <Input
+                                        id="address_cep"
+                                        name="address_cep"
+                                        value={cep}
+                                        onChange={(e) =>
+                                            setCep(formatCep(e.target.value))
+                                        }
+                                        placeholder="00000-000"
+                                        inputMode="numeric"
+                                    />
+                                    {cepLoading && (
+                                        <Spinner className="absolute top-1/2 right-3 -translate-y-1/2" />
+                                    )}
+                                </div>
+                                {cepError && (
+                                    <p className="text-xs text-destructive">
+                                        {cepError}
+                                    </p>
+                                )}
+                                <InputError message={errors.address_cep} />
                             </div>
 
                             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -217,8 +331,9 @@ export default function Profile({ barber, profile, steps }: Props) {
                                     <Input
                                         id="address_street"
                                         name="address_street"
-                                        defaultValue={
-                                            profile?.address_street ?? ''
+                                        value={street}
+                                        onChange={(e) =>
+                                            setStreet(e.target.value)
                                         }
                                         required
                                     />
@@ -235,7 +350,7 @@ export default function Profile({ barber, profile, steps }: Props) {
                                         id="address_number"
                                         name="address_number"
                                         defaultValue={
-                                            profile?.address_number ?? ''
+                                            profile?.address_number ?? ""
                                         }
                                         required
                                     />
@@ -252,8 +367,9 @@ export default function Profile({ barber, profile, steps }: Props) {
                                 <Input
                                     id="address_neighborhood"
                                     name="address_neighborhood"
-                                    defaultValue={
-                                        profile?.address_neighborhood ?? ''
+                                    value={neighborhood}
+                                    onChange={(e) =>
+                                        setNeighborhood(e.target.value)
                                     }
                                     required
                                 />
@@ -268,8 +384,9 @@ export default function Profile({ barber, profile, steps }: Props) {
                                     <Input
                                         id="address_city"
                                         name="address_city"
-                                        defaultValue={
-                                            profile?.address_city ?? ''
+                                        value={city}
+                                        onChange={(e) =>
+                                            setCity(e.target.value)
                                         }
                                         required
                                     />
@@ -282,9 +399,8 @@ export default function Profile({ barber, profile, steps }: Props) {
                                     </Label>
                                     <Select
                                         name="address_state"
-                                        defaultValue={
-                                            profile?.address_state ?? ''
-                                        }
+                                        value={state}
+                                        onValueChange={setState}
                                     >
                                         <SelectTrigger id="address_state">
                                             <SelectValue placeholder="UF" />
@@ -301,19 +417,6 @@ export default function Profile({ barber, profile, steps }: Props) {
                                         message={errors.address_state}
                                     />
                                 </div>
-                            </div>
-
-                            <div className="grid gap-2">
-                                <Label htmlFor="address_cep">
-                                    CEP (opcional)
-                                </Label>
-                                <Input
-                                    id="address_cep"
-                                    name="address_cep"
-                                    defaultValue={profile?.address_cep ?? ''}
-                                    placeholder="00000-000"
-                                />
-                                <InputError message={errors.address_cep} />
                             </div>
 
                             <div className="grid gap-2">

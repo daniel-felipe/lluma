@@ -32,6 +32,7 @@ import {
     DialogHeader,
     DialogTitle,
 } from '@/components/ui/dialog';
+import CurrencyInput from '@/components/ui/currency-input';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Progress } from '@/components/ui/progress';
@@ -69,15 +70,6 @@ function formatPrice(cents: number): string {
     }).format(cents / 100);
 }
 
-function parsePriceToCents(value: string): string {
-    const numeric = value.replace(/[^\d,]/g, '').replace(',', '.');
-    const float = parseFloat(numeric);
-    if (isNaN(float)) {
-        return '';
-    }
-    return String(Math.round(float * 100));
-}
-
 type ServiceFormProps = {
     service?: Service;
     onCancel: () => void;
@@ -90,9 +82,7 @@ function ServiceForm({ service, onCancel, onSuccess }: ServiceFormProps) {
         ? ServiceController.update(service.id)
         : ServiceController.store();
 
-    const defaultPrice = isEdit
-        ? (service.price_cents / 100).toFixed(2).replace('.', ',')
-        : '';
+    const defaultPriceCents = isEdit ? service.price_cents : 0;
 
     return (
         <Form {...action} resetOnSuccess onSuccess={onSuccess} className="flex flex-col gap-4">
@@ -112,8 +102,13 @@ function ServiceForm({ service, onCancel, onSuccess }: ServiceFormProps) {
 
                     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                         <div className="grid gap-2">
-                            <Label htmlFor="price_display">Preço (R$)</Label>
-                            <PriceInput defaultValue={defaultPrice} />
+                            <Label htmlFor="price_display">Preço</Label>
+                            <CurrencyInput
+                                id="price_display"
+                                name="price_cents"
+                                defaultValueCents={defaultPriceCents}
+                                required
+                            />
                             <InputError message={errors.price_cents} />
                         </div>
 
@@ -157,35 +152,6 @@ function ServiceForm({ service, onCancel, onSuccess }: ServiceFormProps) {
                 </>
             )}
         </Form>
-    );
-}
-
-type PriceInputProps = {
-    defaultValue?: string;
-};
-
-function PriceInput({ defaultValue = '' }: PriceInputProps) {
-    const [display, setDisplay] = useState(defaultValue);
-
-    function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
-        setDisplay(e.target.value);
-    }
-
-    const cents = parsePriceToCents(display);
-
-    return (
-        <>
-            <Input
-                id="price_display"
-                type="text"
-                inputMode="decimal"
-                value={display}
-                onChange={handleChange}
-                placeholder="0,00"
-                required
-            />
-            <input type="hidden" name="price_cents" value={cents} />
-        </>
     );
 }
 
