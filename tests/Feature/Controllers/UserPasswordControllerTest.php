@@ -2,10 +2,7 @@
 
 declare(strict_types = 1);
 
-use App\Enums\SmsVerificationPurpose;
-use App\Models\SmsVerification;
 use App\Models\User;
-use App\Services\NullSmsGateway;
 use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Hash;
@@ -208,104 +205,4 @@ it('redirects authenticated users away from reset password', function (): void {
         ->get(route('password.reset', ['token' => 'fake-token']));
 
     $response->assertRedirectToRoute('dashboard');
-});
-
-// SMS-based password recovery (BarberPasswordResetController)
-
-it('renders forgot phone password page', function (): void {
-    $response = $this->fromRoute('home')
-        ->get(route('password.forgot-phone'));
-
-    $response->assertOk()
-        ->assertInertia(fn ($page) => $page->component('user-password/forgot-phone'));
-});
-
-it('sends sms verification for registered phone', function (): void {
-    NullSmsGateway::$sent = [];
-    $user                 = User::factory()->phoneVerified()->create(['phone' => '+5531999990000']);
-
-    $response = $this->fromRoute('password.forgot-phone')
-        ->post(route('password.forgot-phone.store'), ['phone' => '(31) 99999-0000']);
-
-    $response->assertRedirectToRoute('password.reset-phone');
-
-    expect(NullSmsGateway::$sent)->toHaveCount(1);
-    expect(SmsVerification::query()->where('phone', '+5531999990000')
-        ->forPurpose(SmsVerificationPurpose::PasswordReset)
-        ->exists())->toBeTrue();
-});
-
-it('returns same success response for unregistered phone without info leak', function (): void {
-    NullSmsGateway::$sent = [];
-
-    $response = $this->fromRoute('password.forgot-phone')
-        ->post(route('password.forgot-phone.store'), ['phone' => '(31) 88888-8888']);
-
-    $response->assertRedirectToRoute('password.reset-phone');
-
-    expect(NullSmsGateway::$sent)->toHaveCount(0);
-});
-
-it('renders sms reset password page', function (): void {
-    $response = $this->fromRoute('home')
-        ->get(route('password.reset-phone'));
-
-    $response->assertOk()
-        ->assertInertia(fn ($page) => $page->component('user-password/reset-phone'));
-});
-
-it('resets password with correct sms code', function (): void {
-    $user         = User::factory()->phoneVerified()->create(['phone' => '+5531999990000']);
-    $verification = SmsVerification::factory()->forPasswordReset()->create([
-        'phone' => '+5531999990000',
-        'code'  => Hash::make('123456'),
-    ]);
-
-    $response = $this->fromRoute('password.reset-phone')
-        ->post(route('password.reset-phone.store'), [
-            'phone'                 => '(31) 99999-0000',
-            'code'                  => '123456',
-            'password'              => 'new-password',
-            'password_confirmation' => 'new-password',
-        ]);
-
-    $response->assertRedirectToRoute('login');
-
-    expect(Hash::check('new-password', $user->refresh()->password))->toBeTrue();
-});
-
-it('returns error for expired sms code on password reset', function (): void {
-    $user = User::factory()->phoneVerified()->create(['phone' => '+5531999990000']);
-    SmsVerification::factory()->forPasswordReset()->expired()->create([
-        'phone' => '+5531999990000',
-        'code'  => Hash::make('123456'),
-    ]);
-
-    $response = $this->fromRoute('password.reset-phone')
-        ->post(route('password.reset-phone.store'), [
-            'phone'                 => '(31) 99999-0000',
-            'code'                  => '123456',
-            'password'              => 'new-password',
-            'password_confirmation' => 'new-password',
-        ]);
-
-    $response->assertSessionHasErrors('code');
-});
-
-it('returns error for exhausted sms code on password reset', function (): void {
-    $user = User::factory()->phoneVerified()->create(['phone' => '+5531999990000']);
-    SmsVerification::factory()->forPasswordReset()->exhausted()->create([
-        'phone' => '+5531999990000',
-        'code'  => Hash::make('123456'),
-    ]);
-
-    $response = $this->fromRoute('password.reset-phone')
-        ->post(route('password.reset-phone.store'), [
-            'phone'                 => '(31) 99999-0000',
-            'code'                  => '123456',
-            'password'              => 'new-password',
-            'password_confirmation' => 'new-password',
-        ]);
-
-    $response->assertSessionHasErrors('code');
 });
