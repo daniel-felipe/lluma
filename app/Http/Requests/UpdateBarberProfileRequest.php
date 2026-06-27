@@ -39,6 +39,7 @@ final class UpdateBarberProfileRequest extends FormRequest
             'address_city'         => ['required', 'string'],
             'address_state'        => ['required', 'string', 'size:2', 'alpha'],
             'address_cep'          => ['nullable', 'string', 'regex:/^\d{5}-\d{3}$/'],
+            'phone'                => ['nullable', 'string', 'regex:/^\+55\d{10,11}$/'],
             'profile_photo'        => ['nullable', 'image', 'mimes:jpeg,png,webp', 'max:5120'],
             'cover_photo'          => ['nullable', 'image', 'mimes:jpeg,png,webp', 'max:5120'],
         ];

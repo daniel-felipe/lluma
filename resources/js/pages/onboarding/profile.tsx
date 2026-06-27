@@ -144,6 +144,20 @@ export default function Profile({ barber, profile, steps }: Props) {
                             </div>
 
                             <div className="grid gap-2">
+                                <Label htmlFor="phone">
+                                    Telefone (opcional)
+                                </Label>
+                                <Input
+                                    id="phone"
+                                    name="phone"
+                                    type="tel"
+                                    defaultValue={barber.phone ?? ''}
+                                    placeholder="(31) 99999-0000"
+                                />
+                                <InputError message={errors.phone} />
+                            </div>
+
+                            <div className="grid gap-2">
                                 <Label htmlFor="business_name">
                                     Nome da barbearia
                                 </Label>

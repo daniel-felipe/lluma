@@ -5,13 +5,9 @@ declare(strict_types = 1);
 use App\Http\Controllers\AppointmentCancellationController;
 use App\Http\Controllers\AppointmentStatusController;
 use App\Http\Controllers\AvailabilityController;
-use App\Http\Controllers\BarberPasswordResetController;
 use App\Http\Controllers\BarberProfileController;
 use App\Http\Controllers\BarberPublicProfileController;
-use App\Http\Controllers\BarberRegistrationController;
 use App\Http\Controllers\BarberScheduleController;
-use App\Http\Controllers\BarberSmsResendController;
-use App\Http\Controllers\BarberSmsVerificationController;
 use App\Http\Controllers\BookingCancellationController;
 use App\Http\Controllers\BookingController;
 use App\Http\Controllers\DailyAgendaController;
@@ -126,28 +122,12 @@ Route::get('auth/google', GoogleRedirectController::class)->name('auth.google');
 Route::get('auth/google/callback', GoogleCallbackController::class)->name('auth.google.callback');
 
 Route::middleware('guest')->group(function (): void {
-    // Barber Registration...
-    Route::get('register', [BarberRegistrationController::class, 'create'])
+    // Registration...
+    Route::get('register', [UserController::class, 'create'])
         ->name('register');
-    Route::post('register', [BarberRegistrationController::class, 'store'])
+    Route::post('register', [UserController::class, 'store'])
         ->middleware('throttle:5,1')
         ->name('register.store');
-    Route::get('register/verify', [BarberSmsVerificationController::class, 'create'])
-        ->name('register.verify');
-    Route::post('register/verify', [BarberSmsVerificationController::class, 'store'])
-        ->name('register.verify.store');
-    Route::post('register/resend', BarberSmsResendController::class)
-        ->name('register.resend');
-
-    // Barber SMS Password Reset (literal routes must be before dynamic {token} routes)...
-    Route::get('forgot-password/phone', [BarberPasswordResetController::class, 'create'])
-        ->name('password.forgot-phone');
-    Route::post('forgot-password/phone', [BarberPasswordResetController::class, 'store'])
-        ->name('password.forgot-phone.store');
-    Route::get('reset-password/phone', [BarberPasswordResetController::class, 'edit'])
-        ->name('password.reset-phone');
-    Route::post('reset-password/phone', [BarberPasswordResetController::class, 'update'])
-        ->name('password.reset-phone.store');
 
     // User Password...
     Route::get('reset-password/{token}', [UserPasswordController::class, 'create'])

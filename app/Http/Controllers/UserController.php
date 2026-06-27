@@ -17,28 +17,26 @@ use Inertia\Response;
 
 final readonly class UserController
 {
-    // @codeCoverageIgnore
     public function create(): Response
     {
-        return Inertia::render('user/create'); // @codeCoverageIgnore
+        return Inertia::render('user/create');
     }
 
-    // @codeCoverageIgnore
     public function store(CreateUserRequest $request, CreateUser $action): RedirectResponse
     {
         /** @var array<string, mixed> $attributes */
-        $attributes = $request->safe()->except('password'); // @codeCoverageIgnore
+        $attributes = $request->safe()->except('password');
 
-        $user = $action->run( // @codeCoverageIgnore
-            $attributes, // @codeCoverageIgnore
-            $request->string('password')->value(), // @codeCoverageIgnore
-        ); // @codeCoverageIgnore
+        $user = $action->run(
+            $attributes,
+            $request->string('password')->value(),
+        );
 
-        Auth::login($user); // @codeCoverageIgnore
+        Auth::login($user);
 
-        $request->session()->regenerate(); // @codeCoverageIgnore
+        $request->session()->regenerate();
 
-        return redirect()->intended(route('dashboard', absolute: false)); // @codeCoverageIgnore
+        return redirect()->intended(route('dashboard', absolute: false));
     }
 
     public function destroy(DeleteUserRequest $request, #[CurrentUser] User $user, DeleteUser $action): RedirectResponse

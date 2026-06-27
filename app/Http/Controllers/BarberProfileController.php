@@ -51,7 +51,7 @@ final class BarberProfileController
 
         $data = array_diff_key(
             $request->validated(),
-            array_flip(['profile_photo', 'cover_photo'])
+            array_flip(['phone', 'profile_photo', 'cover_photo'])
         );
         resolve(UpdateBarberProfile::class)->run(
             $user,
@@ -59,6 +59,10 @@ final class BarberProfileController
             $request->file('profile_photo'),
             $request->file('cover_photo'),
         );
+
+        if ($request->has('phone')) {
+            $user->update(['phone' => $request->string('phone')->value() ?: null]);
+        }
 
         return to_route('dashboard');
     }

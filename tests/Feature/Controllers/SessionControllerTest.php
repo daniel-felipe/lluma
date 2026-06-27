@@ -18,7 +18,7 @@ it('renders login page', function (): void {
             ->has('status'));
 });
 
-it('may create a session with email identifier', function (): void {
+it('may create a session with email', function (): void {
     $user = User::factory()->withoutTwoFactor()->create([
         'email'    => 'test@example.com',
         'password' => Hash::make('password'),
@@ -26,8 +26,8 @@ it('may create a session with email identifier', function (): void {
 
     $response = $this->fromRoute('login')
         ->post(route('login.store'), [
-            'identifier' => 'test@example.com',
-            'password'   => 'password',
+            'email'    => 'test@example.com',
+            'password' => 'password',
         ]);
 
     $response->assertRedirectToRoute('dashboard');
@@ -35,48 +35,14 @@ it('may create a session with email identifier', function (): void {
     $this->assertAuthenticatedAs($user);
 });
 
-it('may create a session with phone identifier', function (): void {
-    $user = User::factory()->withoutTwoFactor()->phoneVerified()->create([
-        'phone'    => '+5531999990000',
-        'password' => Hash::make('password'),
-    ]);
-
+it('fails when login uses phone-format string', function (): void {
     $response = $this->fromRoute('login')
         ->post(route('login.store'), [
-            'identifier' => '(31) 99999-0000',
-            'password'   => 'password',
+            'email'    => '(31) 99999-0000',
+            'password' => 'password',
         ]);
 
-    $response->assertRedirectToRoute('dashboard');
-
-    $this->assertAuthenticatedAs($user);
-});
-
-it('fails gracefully when login identifier has non-matchable digits', function (): void {
-    $response = $this->fromRoute('login')
-        ->post(route('login.store'), [
-            'identifier' => '123456789012',
-            'password'   => 'password',
-        ]);
-
-    $response->assertSessionHasErrors('identifier');
-});
-
-it('may create a session with E.164 phone identifier', function (): void {
-    $user = User::factory()->withoutTwoFactor()->phoneVerified()->create([
-        'phone'    => '+5531999990000',
-        'password' => Hash::make('password'),
-    ]);
-
-    $response = $this->fromRoute('login')
-        ->post(route('login.store'), [
-            'identifier' => '+5531999990000',
-            'password'   => 'password',
-        ]);
-
-    $response->assertRedirectToRoute('dashboard');
-
-    $this->assertAuthenticatedAs($user);
+    $response->assertSessionHasErrors('email');
 });
 
 it('may create a session with remember me', function (): void {
@@ -87,9 +53,9 @@ it('may create a session with remember me', function (): void {
 
     $response = $this->fromRoute('login')
         ->post(route('login.store'), [
-            'identifier' => 'test@example.com',
-            'password'   => 'password',
-            'remember'   => true,
+            'email'    => 'test@example.com',
+            'password' => 'password',
+            'remember' => true,
         ]);
 
     $response->assertRedirectToRoute('dashboard');
@@ -108,8 +74,8 @@ it('redirects to two-factor challenge when enabled', function (): void {
 
     $response = $this->fromRoute('login')
         ->post(route('login.store'), [
-            'identifier' => 'test@example.com',
-            'password'   => 'password',
+            'email'    => 'test@example.com',
+            'password' => 'password',
         ]);
 
     $response->assertRedirectToRoute('two-factor.login');
@@ -125,43 +91,43 @@ it('fails with invalid credentials', function (): void {
 
     $response = $this->fromRoute('login')
         ->post(route('login.store'), [
-            'identifier' => 'test@example.com',
-            'password'   => 'wrong-password',
+            'email'    => 'test@example.com',
+            'password' => 'wrong-password',
         ]);
 
     $response->assertRedirectToRoute('login')
-        ->assertSessionHasErrors('identifier');
+        ->assertSessionHasErrors('email');
 
     $this->assertGuest();
 });
 
-it('fails with unknown identifier without leaking user existence', function (): void {
+it('fails with unknown email without leaking user existence', function (): void {
     $response = $this->fromRoute('login')
         ->post(route('login.store'), [
-            'identifier' => 'nonexistent@example.com',
-            'password'   => 'password',
+            'email'    => 'nonexistent@example.com',
+            'password' => 'password',
         ]);
 
     $response->assertRedirectToRoute('login')
-        ->assertSessionHasErrors('identifier');
+        ->assertSessionHasErrors('email');
 
     $this->assertGuest();
 });
 
-it('requires identifier', function (): void {
+it('requires email', function (): void {
     $response = $this->fromRoute('login')
         ->post(route('login.store'), [
             'password' => 'password',
         ]);
 
     $response->assertRedirectToRoute('login')
-        ->assertSessionHasErrors('identifier');
+        ->assertSessionHasErrors('email');
 });
 
 it('requires password', function (): void {
     $response = $this->fromRoute('login')
         ->post(route('login.store'), [
-            'identifier' => 'test@example.com',
+            'email' => 'test@example.com',
         ]);
 
     $response->assertRedirectToRoute('login')
@@ -200,15 +166,15 @@ it('locks login after 10 failed attempts with throttledUntil', function (): void
     for ($i = 0; $i < 10; $i++) {
         $this->fromRoute('login')
             ->post(route('login.store'), [
-                'identifier' => 'test@example.com',
-                'password'   => 'wrong-password',
+                'email'    => 'test@example.com',
+                'password' => 'wrong-password',
             ]);
     }
 
     $response = $this->fromRoute('login')
         ->post(route('login.store'), [
-            'identifier' => 'test@example.com',
-            'password'   => 'wrong-password',
+            'email'    => 'test@example.com',
+            'password' => 'wrong-password',
         ]);
 
     $response->assertRedirect()
@@ -226,8 +192,8 @@ it('clears lock after successful login', function (): void {
 
     $response = $this->fromRoute('login')
         ->post(route('login.store'), [
-            'identifier' => 'test@example.com',
-            'password'   => 'password',
+            'email'    => 'test@example.com',
+            'password' => 'password',
         ]);
 
     $response->assertRedirectToRoute('dashboard');
@@ -245,8 +211,8 @@ it('redirects barber without completed profile to onboarding after login', funct
     $response = $this->fromRoute('login')
         ->followingRedirects()
         ->post(route('login.store'), [
-            'identifier' => 'barber@example.com',
-            'password'   => 'password',
+            'email'    => 'barber@example.com',
+            'password' => 'password',
         ]);
 
     $response->assertInertia(fn ($page) => $page->component('onboarding/profile'));

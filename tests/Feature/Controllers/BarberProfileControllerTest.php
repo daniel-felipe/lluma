@@ -129,3 +129,42 @@ it('renders profile edit page with null profile when user has no barber profile'
             ->component('onboarding/profile')
             ->where('profile', null));
 });
+
+it('saves optional phone to user when provided', function (): void {
+    Storage::fake('public');
+    $user = User::factory()->create(['phone' => null]);
+    BarberProfile::factory()->for($user)->draft()->create();
+
+    $this->actingAs($user)->post(route('onboarding.profile.update'), [
+        'name'                 => 'João da Silva',
+        'business_name'        => 'Barbearia do João',
+        'slug'                 => 'barbearia-do-joao',
+        'address_street'       => 'Rua das Flores',
+        'address_number'       => '123',
+        'address_neighborhood' => 'Centro',
+        'address_city'         => 'Belo Horizonte',
+        'address_state'        => 'MG',
+        'phone'                => '+5531999990000',
+    ]);
+
+    expect($user->fresh()->phone)->toBe('+5531999990000');
+});
+
+it('rejects invalid phone format', function (): void {
+    $user = User::factory()->create();
+    BarberProfile::factory()->for($user)->draft()->create();
+
+    $response = $this->actingAs($user)->post(route('onboarding.profile.update'), [
+        'name'                 => 'João da Silva',
+        'business_name'        => 'Barbearia do João',
+        'slug'                 => 'barbearia-do-joao',
+        'address_street'       => 'Rua das Flores',
+        'address_number'       => '123',
+        'address_neighborhood' => 'Centro',
+        'address_city'         => 'Belo Horizonte',
+        'address_state'        => 'MG',
+        'phone'                => '31999990000',
+    ]);
+
+    $response->assertSessionHasErrors('phone');
+});

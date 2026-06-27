@@ -28,9 +28,9 @@ final readonly class SessionController
 
     public function store(CreateSessionRequest $request): RedirectResponse
     {
-        $identifier = $request->string('identifier')->toString();
-        $lockKey    = 'login_locked_until:' . $identifier;
-        $failureKey = 'login_failures:' . $identifier;
+        $email      = $request->string('email')->toString();
+        $lockKey    = 'login_locked_until:' . $email;
+        $failureKey = 'login_failures:' . $email;
 
         $lockedUntil = Cache::get($lockKey);
 
