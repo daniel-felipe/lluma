@@ -33,7 +33,7 @@ final readonly class SaveBarberSchedule
                 );
             }
 
-            if ($profile->onboarding_step === BarberOnboardingStep::Availability) {
+            if ($profile->onboarding_step !== BarberOnboardingStep::Complete) {
                 $profile->update(['onboarding_step' => BarberOnboardingStep::Complete]);
             }
 

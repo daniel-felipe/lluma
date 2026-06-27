@@ -14,6 +14,7 @@ type ComboboxProps = {
     onValueChange?: (value: string) => void
     placeholder?: string
     searchPlaceholder?: string
+    searchable?: boolean
     emptyMessage?: string
     name?: string
     required?: boolean
@@ -28,6 +29,7 @@ function Combobox({
     onValueChange,
     placeholder = "Selecione…",
     searchPlaceholder = "Buscar…",
+    searchable = true,
     emptyMessage = "Nenhum resultado.",
     name,
     required,
@@ -61,10 +63,10 @@ function Combobox({
     }, [open])
 
     React.useEffect(() => {
-        if (open) {
+        if (open && searchable) {
             setTimeout(() => searchRef.current?.focus(), 0)
         }
-    }, [open])
+    }, [open, searchable])
 
     function toggle() {
         if (disabled) return
@@ -118,18 +120,20 @@ function Combobox({
             {open && (
                 <div
                     data-slot="combobox-content"
-                    className="absolute left-0 top-full z-50 mt-1 w-full overflow-hidden rounded-[8px] border border-border bg-popover shadow-md"
+                    className="absolute left-0 top-full z-50 mt-1 w-full min-w-full overflow-hidden rounded-[8px] border border-border bg-popover shadow-md"
                 >
-                    <div className="flex items-center gap-2 border-b border-border px-3 py-2">
-                        <SearchIcon className="size-3.5 shrink-0 text-muted-foreground" />
-                        <input
-                            ref={searchRef}
-                            value={search}
-                            onChange={(e) => setSearch(e.target.value)}
-                            placeholder={searchPlaceholder}
-                            className="flex-1 bg-transparent text-sm text-popover-foreground outline-none placeholder:text-muted-foreground"
-                        />
-                    </div>
+                    {searchable && (
+                        <div className="flex items-center gap-2 border-b border-border px-3 py-2">
+                            <SearchIcon className="size-3.5 shrink-0 text-muted-foreground" />
+                            <input
+                                ref={searchRef}
+                                value={search}
+                                onChange={(e) => setSearch(e.target.value)}
+                                placeholder={searchPlaceholder}
+                                className="flex-1 bg-transparent text-sm text-popover-foreground outline-none placeholder:text-muted-foreground"
+                            />
+                        </div>
+                    )}
 
                     <div role="listbox" className="max-h-60 overflow-y-auto p-1">
                         {filtered.length === 0 ? (

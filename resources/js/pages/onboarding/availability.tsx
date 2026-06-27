@@ -13,6 +13,7 @@ import {
     SelectValue,
 } from '@/components/ui/select';
 import { Spinner } from '@/components/ui/spinner';
+import { cn } from '@/lib/utils';
 import AuthLayout from '@/layouts/auth-layout';
 
 type Day = {
@@ -87,14 +88,38 @@ function TimeSelect({
     onChange: (v: string | null) => void;
 }) {
     return (
-        <Combobox
-            options={TIME_COMBOBOX_OPTIONS}
-            value={value ?? ''}
-            onValueChange={(v) => onChange(v || null)}
-            placeholder={label}
-            searchPlaceholder="Buscar horário…"
-            size="sm"
-        />
+        <div className="w-[82px]">
+            <Combobox
+                options={TIME_COMBOBOX_OPTIONS}
+                value={value ?? ''}
+                onValueChange={(v) => onChange(v || null)}
+                placeholder={label}
+                searchable={false}
+                size="sm"
+            />
+        </div>
+    );
+}
+
+function Switch({ checked, onChange }: { checked: boolean; onChange: () => void }) {
+    return (
+        <button
+            type="button"
+            role="switch"
+            aria-checked={checked}
+            onClick={onChange}
+            className={cn(
+                'relative inline-flex h-[18px] w-[34px] shrink-0 cursor-pointer rounded-full transition-colors',
+                checked ? 'bg-foreground' : 'bg-muted',
+            )}
+        >
+            <span
+                className={cn(
+                    'pointer-events-none absolute top-[3px] size-3 rounded-full bg-background shadow transition-transform',
+                    checked ? 'translate-x-[19px]' : 'translate-x-[3px]',
+                )}
+            />
+        </button>
     );
 }
 
@@ -112,130 +137,87 @@ function DayRow({ day, index, errors, onUpdate }: DayRowProps) {
                 break_ends_at: null,
             });
         } else {
-            onUpdate({
-                is_open: true,
-                opens_at: '09:00',
-                closes_at: '19:00',
-            });
+            onUpdate({ is_open: true, opens_at: '09:00', closes_at: '19:00' });
         }
     }
 
-    function addBreak() {
-        onUpdate({ break_starts_at: '12:00', break_ends_at: '13:00' });
-    }
-
-    function removeBreak() {
-        onUpdate({ break_starts_at: null, break_ends_at: null });
-    }
-
     return (
-        <div className="border-b py-3 last:border-b-0">
-            {/* Main row: toggle + day name + open/close times */}
-            <div className="flex flex-col items-start gap-2 sm:flex-row sm:items-center sm:justify-between sm:gap-3">
-                <div className="flex items-center gap-3">
-                    <button
-                        type="button"
-                        role="switch"
-                        aria-checked={day.is_open}
-                        onClick={toggleOpen}
-                        className={[
-                            'relative inline-flex h-[18px] w-[34px] shrink-0 cursor-pointer rounded-full transition-colors',
-                            day.is_open ? 'bg-foreground' : 'bg-muted',
-                        ].join(' ')}
-                    >
-                        <span
-                            className={[
-                                'pointer-events-none absolute top-[3px] size-3 rounded-full bg-background shadow transition-transform',
-                                day.is_open ? 'translate-x-[19px]' : 'translate-x-[3px]',
-                            ].join(' ')}
-                        />
-                    </button>
-                    <span
-                        className={[
-                            'w-14 text-sm font-bold',
-                            day.is_open ? 'text-foreground' : 'text-muted-foreground',
-                        ].join(' ')}
-                    >
-                        {dayName}
-                    </span>
-                </div>
+        <div className="border-b last:border-b-0">
+            {/* Day row */}
+            <div className="flex items-center gap-3 py-3">
+                <Switch checked={day.is_open} onChange={toggleOpen} />
 
-                <div className="flex h-8 items-center pl-[46px] sm:pl-0">
-                    {day.is_open ? (
-                        <div className="flex flex-wrap items-center gap-1.5">
-                            <TimeSelect
-                                id={`opens_at_${index}`}
-                                label={`${dayName} abertura`}
-                                value={day.opens_at}
-                                onChange={(v) => onUpdate({ opens_at: v })}
-                            />
-                            <span className="text-xs text-muted-foreground">até</span>
-                            <TimeSelect
-                                id={`closes_at_${index}`}
-                                label={`${dayName} fechamento`}
-                                value={day.closes_at}
-                                onChange={(v) => onUpdate({ closes_at: v })}
-                            />
-                        </div>
-                    ) : (
-                        <span className="text-xs font-semibold text-muted-foreground">
-                            Fechado
-                        </span>
+                <span
+                    className={cn(
+                        'w-16 text-sm font-medium',
+                        !day.is_open && 'text-muted-foreground',
                     )}
-                </div>
+                >
+                    {dayName}
+                </span>
+
+                {day.is_open ? (
+                    <div className="ml-auto flex items-center gap-1.5">
+                        <TimeSelect
+                            id={`opens_at_${index}`}
+                            label="Abertura"
+                            value={day.opens_at}
+                            onChange={(v) => onUpdate({ opens_at: v })}
+                        />
+                        <span className="text-xs text-muted-foreground">–</span>
+                        <TimeSelect
+                            id={`closes_at_${index}`}
+                            label="Fechamento"
+                            value={day.closes_at}
+                            onChange={(v) => onUpdate({ closes_at: v })}
+                        />
+                    </div>
+                ) : (
+                    <span className="ml-auto text-xs font-medium text-muted-foreground">
+                        Fechado
+                    </span>
+                )}
             </div>
 
-            <InputError message={errors[`days.${index}.opens_at`]} />
-            <InputError message={errors[`days.${index}.closes_at`]} />
+            <InputError message={errors[`days.${index}.opens_at`]} className="pl-[46px]" />
+            <InputError message={errors[`days.${index}.closes_at`]} className="pl-[46px]" />
 
-            {/* Break block */}
+            {/* Break sub-row — only shown after user adds it */}
             {day.is_open && (
-                <div className="mt-2 pl-0 sm:pl-[46px]">
+                <div className="pb-3 pl-[46px]">
                     {hasBreak ? (
                         <div className="flex flex-col gap-1">
-                            <div className="flex flex-wrap items-center gap-1.5">
-                                <span className="text-xs text-muted-foreground">
-                                    Pausa:
-                                </span>
+                            <div className="flex items-center gap-1.5">
+                                <span className="text-xs text-muted-foreground">Pausa:</span>
                                 <TimeSelect
                                     id={`break_starts_at_${index}`}
-                                    label={`${dayName} início da pausa`}
+                                    label="Início"
                                     value={day.break_starts_at}
-                                    onChange={(v) =>
-                                        onUpdate({ break_starts_at: v })
-                                    }
+                                    onChange={(v) => onUpdate({ break_starts_at: v })}
                                 />
-                                <span className="text-xs text-muted-foreground">
-                                    até
-                                </span>
+                                <span className="text-xs text-muted-foreground">–</span>
                                 <TimeSelect
                                     id={`break_ends_at_${index}`}
-                                    label={`${dayName} fim da pausa`}
+                                    label="Fim"
                                     value={day.break_ends_at}
-                                    onChange={(v) =>
-                                        onUpdate({ break_ends_at: v })
-                                    }
+                                    onChange={(v) => onUpdate({ break_ends_at: v })}
                                 />
                                 <button
                                     type="button"
-                                    onClick={removeBreak}
+                                    onClick={() => onUpdate({ break_starts_at: null, break_ends_at: null })}
                                     aria-label={`Remover pausa de ${dayName}`}
                                     className="ml-1 text-xs text-muted-foreground underline-offset-2 hover:text-destructive hover:underline"
                                 >
                                     remover
                                 </button>
                             </div>
-                            <InputError
-                                message={errors[`days.${index}.break_starts_at`]}
-                            />
-                            <InputError
-                                message={errors[`days.${index}.break_ends_at`]}
-                            />
+                            <InputError message={errors[`days.${index}.break_starts_at`]} />
+                            <InputError message={errors[`days.${index}.break_ends_at`]} />
                         </div>
                     ) : (
                         <button
                             type="button"
-                            onClick={addBreak}
+                            onClick={() => onUpdate({ break_starts_at: '12:00', break_ends_at: '13:00' })}
                             className="text-xs text-muted-foreground underline-offset-2 hover:text-foreground hover:underline"
                         >
                             + adicionar pausa

@@ -127,7 +127,7 @@ it('does not modify onboarding step when already Complete', function (): void {
     expect($profile->fresh()->onboarding_step)->toBe(BarberOnboardingStep::Complete);
 });
 
-it('does not modify onboarding step when at an earlier step', function (): void {
+it('completes onboarding when saving from an earlier in-progress step', function (): void {
     $user    = User::factory()->create();
     $profile = BarberProfile::factory()->for($user)->create([
         'onboarding_step' => BarberOnboardingStep::Services,
@@ -136,7 +136,7 @@ it('does not modify onboarding step when at an earlier step', function (): void 
     $action = resolve(SaveBarberSchedule::class);
     $action->run($profile, scheduleData());
 
-    expect($profile->fresh()->onboarding_step)->toBe(BarberOnboardingStep::Services);
+    expect($profile->fresh()->onboarding_step)->toBe(BarberOnboardingStep::Complete);
 });
 
 // ─────────────────────────────────────────────────────────────

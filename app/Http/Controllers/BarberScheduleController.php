@@ -60,7 +60,7 @@ final class BarberScheduleController
         $user    = $request->user();
         $profile = $user->barberProfile;
 
-        $wasOnboarding = $profile->onboarding_step === BarberOnboardingStep::Availability;
+        $wasOnboarding = $profile->onboarding_step !== BarberOnboardingStep::Complete;
 
         resolve(SaveBarberSchedule::class)->run($profile, $request->validated());
 
