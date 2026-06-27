@@ -9,14 +9,9 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
 use Laravel\Socialite\Facades\Socialite;
 
-final readonly class GoogleAuthController
+final readonly class GoogleCallbackController
 {
-    public function redirect(): RedirectResponse
-    {
-        return Socialite::driver('google')->redirect();
-    }
-
-    public function callback(): RedirectResponse
+    public function __invoke(): RedirectResponse
     {
         $googleUser = Socialite::driver('google')->user();
 

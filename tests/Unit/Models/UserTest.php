@@ -18,5 +18,6 @@ test('to array', function (): void {
             'updated_at',
             'phone',
             'phone_verified_at',
+            'google_id',
         ]);
 });

@@ -15,7 +15,8 @@ use App\Http\Controllers\BarberSmsVerificationController;
 use App\Http\Controllers\BookingCancellationController;
 use App\Http\Controllers\BookingController;
 use App\Http\Controllers\DailyAgendaController;
-use App\Http\Controllers\GoogleAuthController;
+use App\Http\Controllers\GoogleCallbackController;
+use App\Http\Controllers\GoogleRedirectController;
 use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\ServiceOrderController;
 use App\Http\Controllers\ServiceToggleController;
@@ -121,8 +122,8 @@ Route::middleware('auth')->group(function (): void {
 });
 
 // Google OAuth...
-Route::get('auth/google', [GoogleAuthController::class, 'redirect'])->name('auth.google');
-Route::get('auth/google/callback', [GoogleAuthController::class, 'callback'])->name('auth.google.callback');
+Route::get('auth/google', GoogleRedirectController::class)->name('auth.google');
+Route::get('auth/google/callback', GoogleCallbackController::class)->name('auth.google.callback');
 
 Route::middleware('guest')->group(function (): void {
     // Barber Registration...
