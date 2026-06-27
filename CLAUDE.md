@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-GoBarber is a barber shop booking platform. Barbers register, configure their profile/services/working hours, and clients book appointments. Currently implementing F1 (onboarding profile), F2 (service catalog), and F3 (working hours config) features as separate spec-driven branches.
+Lluma is an appointment-scheduling platform for barbershops, salons, and beauty businesses. Barbers/owners register, configure their profile/services/working hours, and clients book via a shared link in three taps. Currently implementing F1 (onboarding profile), F2 (service catalog), and F3 (working hours config) features as separate spec-driven branches.
 
 ## Commands
 

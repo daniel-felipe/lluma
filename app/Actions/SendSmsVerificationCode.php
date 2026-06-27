@@ -25,7 +25,7 @@ final readonly class SendSmsVerificationCode
             'attempt_count' => 0,
         ]);
 
-        $this->smsGateway->send($phone, 'Seu código de verificação GoBarber: ' . $code);
+        $this->smsGateway->send($phone, 'Seu código de verificação Lluma: ' . $code);
 
         return $verification;
     }
