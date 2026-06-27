@@ -1,0 +1,19 @@
+{
+    "hooks": {
+        "PostToolUse": [
+            {
+                "matcher": "Edit|Write",
+                "hooks": [
+                    {
+                        "type": "command",
+                        "command": "cd /home/daniel/Work/lluma/lluma && git diff --name-only HEAD 2>/dev/null | grep -qE '\\.php$' && vendor/bin/pint --dirty --format agent 2>&1 | tail -5 || true"
+                    },
+                    {
+                        "type": "command",
+                        "command": "cd /home/daniel/Work/lluma/lluma && git diff --name-only HEAD 2>/dev/null | grep -qE '(Controller\\.php|routes/)' && php artisan wayfinder:generate 2>&1 | tail -3 || true"
+                    }
+                ]
+            }
+        ]
+    }
+}
