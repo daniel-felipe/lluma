@@ -53,7 +53,7 @@ This project follows specific architectural patterns. Adhere to these rules stri
 
 - **Method Name:** All Action classes must use a `run()` method as their entry point.
 - **Invocation:** Do not instantiate Actions with `new` or via constructor injection unless necessary. Use the `resolve()` helper to execute them.
-    - *Example:* `resolve(CreateUserAction::class)->run($data);`
+  - *Example:* `resolve(CreateUserAction::class)->run($data);`
 
 ## 3. Modern Laravel Syntax (PHP 8.2+)
 
@@ -62,11 +62,15 @@ Always use the most recent Laravel features and PHP Attributes over legacy metho
 Example:
 
 Use the `#[Scope]` attribute instead of the `scopeName` prefix.
+
 - **Bad:**
+
   ```php
   public function scopeActive($query) { ... }
   ```
+
 - **Good:**
+
   ```php
   use Illuminate\Database\Eloquent\Attributes\ScopedBy; // If using global
   // For local scopes:
@@ -108,6 +112,7 @@ if ($user->isAdmin()) {
 - Use **Typed constants** (PHP 8.3).
 - Use **uuid** for record ids
 - Always use variable full name (e.g. instead of fn (Builder $q) use fn (Builder $query))
+- Avoid using "—" on texts.
 
 === foundation rules ===
 
@@ -124,6 +129,7 @@ This application is a Laravel application and its main Laravel ecosystems packag
 - laravel/fortify (FORTIFY) - v1
 - laravel/framework (LARAVEL) - v13
 - laravel/prompts (PROMPTS) - v0
+- laravel/socialite (SOCIALITE) - v5
 - laravel/wayfinder (WAYFINDER) - v0
 - larastan/larastan (LARASTAN) - v3
 - laravel/boost (BOOST) - v2
