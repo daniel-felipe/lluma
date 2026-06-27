@@ -260,7 +260,7 @@ export default function DailyAgenda({ appointments, metrics, services }: Props) 
                                 </div>
 
                                 <div className="space-y-2">
-                                    <Label htmlFor="walkin-phone">Telefone (opcional)</Label>
+                                    <Label htmlFor="walkin-phone">Telefone</Label>
                                     <PhoneInput
                                         id="walkin-phone"
                                         name="client_phone"

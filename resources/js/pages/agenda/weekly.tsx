@@ -4,6 +4,7 @@ import { useMemo, useState } from 'react';
 import WalkInController from '@/actions/App/Http/Controllers/WalkInController';
 import WeeklyAgendaController from '@/actions/App/Http/Controllers/WeeklyAgendaController';
 import InputError from '@/components/input-error';
+import PhoneInput from '@/components/phone-input';
 import { Button } from '@/components/ui/button';
 import { Combobox } from '@/components/ui/combobox';
 import {
@@ -390,9 +391,15 @@ export default function WeeklyAgenda({ week_start, opens_at, closes_at, appointm
                                     </div>
 
                                     <div className="space-y-2">
-                                        <Label htmlFor="manual-phone">Telefone (opcional)</Label>
-                                        <Input id="manual-phone" name="client_phone" type="tel" placeholder="(99) 99999-9999" />
-                                        <InputError message={errors.client_phone} />
+                                        <Label htmlFor="manual-phone">Telefone</Label>
+                                        <PhoneInput
+                                            id="manual-phone"
+                                            name="client_phone"
+                                            defaultCountry="BR"
+                                            aria-invalid={errors.client_phone ? 'true' : undefined}
+                                            aria-describedby={errors.client_phone ? 'manual-phone-error' : undefined}
+                                        />
+                                        <InputError id="manual-phone-error" message={errors.client_phone} />
                                     </div>
 
                                     <DialogFooter>

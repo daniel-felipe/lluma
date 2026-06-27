@@ -1,6 +1,7 @@
 import { Form, Head, useHttp } from '@inertiajs/react';
 import { useEffect, useState } from 'react';
 import InputError from '@/components/input-error';
+import PhoneInput from '@/components/phone-input';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -145,16 +146,17 @@ export default function Profile({ barber, profile, steps }: Props) {
 
                             <div className="grid gap-2">
                                 <Label htmlFor="phone">
-                                    Telefone (opcional)
+                                    Telefone
                                 </Label>
-                                <Input
+                                <PhoneInput
                                     id="phone"
                                     name="phone"
-                                    type="tel"
-                                    defaultValue={barber.phone ?? ''}
-                                    placeholder="(31) 99999-0000"
+                                    defaultCountry="BR"
+                                    value={barber.phone ?? ''}
+                                    aria-invalid={errors.phone ? 'true' : undefined}
+                                    aria-describedby={errors.phone ? 'phone-error' : undefined}
                                 />
-                                <InputError message={errors.phone} />
+                                <InputError id="phone-error" message={errors.phone} />
                             </div>
 
                             <div className="grid gap-2">
