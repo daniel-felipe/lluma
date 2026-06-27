@@ -107,7 +107,7 @@ it('returns validation error for oversized photo', function (): void {
         'address_neighborhood' => 'Centro',
         'address_city'         => 'Belo Horizonte',
         'address_state'        => 'MG',
-        'profile_photo'        => UploadedFile::fake()->image('photo.jpg')->size(6000),
+        'profile_photo'        => UploadedFile::fake()->create('photo.jpg', 6000, 'image/jpeg'),
     ]);
 
     $response->assertSessionHasErrors('profile_photo');

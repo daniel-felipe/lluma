@@ -53,7 +53,7 @@ it('stores profile photo when provided', function (): void {
     $user = User::factory()->create();
 
     $action = resolve(UpdateBarberProfile::class);
-    $photo  = UploadedFile::fake()->image('photo.jpg');
+    $photo  = UploadedFile::fake()->create('photo.jpg', 100, 'image/jpeg');
 
     $profile = $action->run($user, [
         'name'                 => 'João',
@@ -75,7 +75,7 @@ it('stores cover photo when provided', function (): void {
     $user = User::factory()->create();
 
     $action = resolve(UpdateBarberProfile::class);
-    $cover  = UploadedFile::fake()->image('cover.jpg');
+    $cover  = UploadedFile::fake()->create('cover.jpg', 100, 'image/jpeg');
 
     $profile = $action->run($user, [
         'name'                 => 'João',
